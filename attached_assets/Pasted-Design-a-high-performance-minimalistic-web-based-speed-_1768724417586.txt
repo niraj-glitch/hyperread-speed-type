@@ -1,0 +1,291 @@
+Design a high-performance, minimalistic, web-based speed-reading platform that allows users to upload text content (PDF, EPUB, TXT, DOCX) and visually stream it at a user-defined reading speed using Rapid Serial Visual Presentation (RSVP) principles.
+
+The interface must prioritize:
+
+Cognitive efficiency
+
+Zero distraction
+
+Precision controls
+
+Professional scientific/productivity aesthetics
+
+This is not an entertainment app. It must resemble a research-grade productivity tool.
+
+Overall Design Philosophy
+
+Minimalist
+
+Cognitive-load optimized
+
+High contrast, low ornamentation
+
+Inspired by:
+
+Nature / NeurIPS conference websites
+
+Readwise Reader
+
+Linear.app
+
+Apple Human Interface Guidelines
+
+Avoid skeuomorphism, gradients, shadows, or decorative graphics
+
+Global Style System
+Color Palette
+
+Background:
+
+Primary: #0E0F12 (near-black, low glare)
+
+Secondary (panels): #16181D
+
+Text:
+
+Primary: #EDEFF2
+
+Secondary: #9AA0A6
+
+Accent (interactive controls only):
+
+#4DA3FF (sliders, active buttons)
+
+Error / Warning:
+
+#FF6B6B
+
+No gradients. No neon. No pastel.
+
+Typography
+
+Primary Font: Inter
+
+Secondary (RSVP text only): IBM Plex Sans or Source Sans 3
+
+Font sizes:
+
+App UI: 14–16 px
+
+RSVP word display: 48–72 px (user adjustable)
+
+Headings: 18–22 px
+
+Line height: 1.3–1.5
+
+Font weight hierarchy:
+
+Normal: 400
+
+UI emphasis: 500
+
+RSVP focus word: 600
+
+Layout Structure (Desktop First)
+1. Top Navigation Bar (Fixed, 56px height)
+
+Left
+
+App logo (text-only): AVSR
+
+Subtitle: “Adaptive Visual Speed Reader”
+
+Right
+
+Upload button (primary)
+
+Settings icon
+
+User profile / sign-in placeholder
+
+No unnecessary links.
+
+2. Main Workspace (Three-Panel Layout)
+LEFT PANEL — Document Manager (20% width)
+
+Functions
+
+Upload document (drag-and-drop)
+
+List of uploaded files
+
+Current document highlighted
+
+Metadata:
+
+Word count
+
+Estimated reading time at current WPM
+
+Design
+
+Vertical list
+
+No thumbnails
+
+Monospaced metadata text
+
+Scrollable
+
+CENTER PANEL — RSVP Reader (60% width)
+
+Primary Focus Area
+
+Full vertical and horizontal centering
+
+Single focal region for text stream
+
+RSVP Display
+
+One chunk displayed at a time
+
+Center-aligned
+
+Highlighted “optimal recognition point” (ORP) letter per word
+
+Optional multi-word chunk mode
+
+Visual Rules
+
+No blinking
+
+No animation except fade-in (50–80 ms)
+
+Punctuation pauses subtly elongate display time
+
+BOTTOM CONTROL STRIP (Sticky, Center Panel)
+
+Controls
+
+Play / Pause
+
+Skip forward / backward (5–10 chunks)
+
+Restart
+
+Speed indicator (WPM live)
+
+RIGHT PANEL — Reading Controls (20% width)
+
+Grouped controls with section headers.
+
+Speed Control
+
+WPM slider (100–1500)
+
+Numeric input (editable)
+
+Speed ramp toggle
+
+Display Controls
+
+Chunk size (1–5 words)
+
+Font size slider
+
+Font family selector
+
+ORP highlight toggle
+
+Cognitive Controls
+
+Pause on punctuation (checkbox)
+
+Pause on paragraph (checkbox)
+
+Auto-slow on long words (checkbox)
+
+3. Upload Flow (First-Time User Experience)
+
+If no document is loaded:
+
+Centered upload panel
+
+Text:
+
+“Upload a document to begin”
+
+Supported formats listed
+
+Minimal iconography
+
+4. States & Feedback
+Loading State
+
+Subtle spinner
+
+Message: “Parsing document…”
+
+Error State
+
+Inline error message
+
+Clear corrective instruction
+
+Paused State
+
+RSVP text dimmed
+
+Play icon visible
+
+5. Interaction Behavior
+
+All sliders update in real time
+
+No page reloads
+
+Keyboard shortcuts:
+
+Space → Play/Pause
+
+← / → → Skip
+
+↑ / ↓ → Speed control
+
+Settings persist per user
+
+6. Accessibility Requirements
+
+WCAG AA contrast compliance
+
+Fully keyboard navigable
+
+Screen-reader compatible controls
+
+Optional dyslexia-friendly font
+
+7. Technical Notes (For Dev Handoff Awareness)
+
+Designed for React / Next.js
+
+Modular components
+
+Stateless RSVP renderer
+
+Responsive down to tablet width
+
+Mobile layout collapses side panels into bottom sheets
+
+8. What NOT to Include
+
+No gamification
+
+No badges or streaks
+
+No ads
+
+No social feed
+
+No animations beyond functional transitions
+
+Final Output Expectation
+
+Generate:
+
+Complete desktop layout
+
+Component-level design
+
+Clear spacing, alignment, and hierarchy
+
+Ready-for-handoff UI suitable for engineering
