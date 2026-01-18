@@ -22,6 +22,7 @@ export const settings = pgTable("settings", {
   fontFamily: text("font_family").default("IBM Plex Sans").notNull(),
   orpHighlight: boolean("orp_highlight").default(true).notNull(),
   pauseOnPunctuation: boolean("pause_on_punctuation").default(true).notNull(),
+  speedRamping: boolean("speed_ramping").default(false).notNull(),
   darkMode: boolean("dark_mode").default(true).notNull(),
 });
 

@@ -6,10 +6,13 @@ import { z } from "zod";
 import multer from "multer";
 import { z as zod } from "zod";
 
+import * as pdf from "pdf-parse";
+import mammoth from "mammoth";
+
 // Configure multer for memory storage
 const upload = multer({ 
   storage: multer.memoryStorage(),
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 20 * 1024 * 1024 } // 20MB limit
 });
 
 export async function registerRoutes(
@@ -21,6 +24,15 @@ export async function registerRoutes(
   app.get(api.documents.list.path, async (req, res) => {
     const docs = await storage.getDocuments();
     res.json(docs);
+  });
+
+  app.get("/api/documents/:id/download", async (req, res) => {
+    const doc = await storage.getDocument(Number(req.params.id));
+    if (!doc) return res.status(404).send("Document not found");
+    
+    res.setHeader('Content-Type', 'text/plain');
+    res.setHeader('Content-Disposition', `attachment; filename="${doc.originalFilename}"`);
+    res.send(doc.content);
   });
 
   app.get(api.documents.get.path, async (req, res) => {
@@ -37,22 +49,24 @@ export async function registerRoutes(
     }
 
     try {
-      // Basic text extraction (For MVP we support TXT, simple parsing)
-      // TODO: Add proper PDF/DOCX parsing libraries in next iteration
       let content = '';
       const buffer = req.file.buffer;
       const mimetype = req.file.mimetype;
 
       if (mimetype === 'text/plain') {
         content = buffer.toString('utf-8');
+      } else if (mimetype === 'application/pdf') {
+        const data = await pdf(buffer);
+        content = data.text;
+      } else if (mimetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        const result = await mammoth.extractRawText({ buffer });
+        content = result.value;
       } else {
-        // Fallback or placeholder for other types until parsing libs added
         content = buffer.toString('utf-8'); 
-        // Real implementation will need pdf-parse or similar
       }
 
-      // Clean up content: normalize whitespace
       content = content.replace(/\s+/g, ' ').trim();
+      if (!content) throw new Error("Could not extract any text from file");
       
       const wordCount = content.split(' ').length;
 
@@ -66,7 +80,7 @@ export async function registerRoutes(
       res.status(201).json(doc);
     } catch (err) {
       console.error('Upload error:', err);
-      res.status(500).json({ message: 'Failed to process file' });
+      res.status(500).json({ message: 'Failed to process file: ' + (err as Error).message });
     }
   });
 

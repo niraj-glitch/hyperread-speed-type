@@ -159,6 +159,7 @@ export default function ReaderPage() {
                   if (selectedId) saveProgress({ id: selectedId, index: 0 });
                 }}
                 onSkip={handleSkip}
+                selectedId={selectedId}
                 isMobile={true}
               />
             </SheetContent>
@@ -266,6 +267,7 @@ export default function ReaderPage() {
               if (selectedId) saveProgress({ id: selectedId, index: 0 });
             }}
             onSkip={handleSkip}
+            selectedId={selectedId}
           />
         </ResizablePanel>
 

@@ -10,7 +10,9 @@ import {
   RotateCcw,
   Type,
   Eye,
-  Activity
+  Activity,
+  Download,
+  Zap
 } from "lucide-react";
 import { useSettings, useUpdateSettings } from "@/hooks/use-settings";
 
@@ -19,6 +21,7 @@ interface ControlPanelProps {
   onTogglePlay: () => void;
   onReset: () => void;
   onSkip: (amount: number) => void;
+  selectedId?: number | null;
   isMobile?: boolean;
 }
 
@@ -27,10 +30,16 @@ export function ControlPanel({
   onTogglePlay, 
   onReset,
   onSkip,
+  selectedId,
   isMobile = false
 }: ControlPanelProps) {
   const { data: settings } = useSettings();
   const { mutate: updateSettings } = useUpdateSettings();
+
+  const handleDownload = () => {
+    if (!selectedId) return;
+    window.open(`/api/documents/${selectedId}/download`, '_blank');
+  };
 
   const handleWpmChange = (value: number[]) => {
     updateSettings({ wpm: value[0] });
@@ -46,6 +55,10 @@ export function ControlPanel({
 
   const toggleOrpHighlight = (checked: boolean) => {
     updateSettings({ orpHighlight: checked });
+  };
+
+  const toggleSpeedRamping = (checked: boolean) => {
+    updateSettings({ speedRamping: checked });
   };
 
   return (
@@ -167,18 +180,31 @@ export function ControlPanel({
           <div className="flex items-center justify-between">
             <div className="space-y-0.5">
               <Label className="text-xs font-medium flex items-center">
-                <Eye className="w-3 h-3 mr-1" />
-                ORP Highlight
+                <Zap className="w-3 h-3 mr-1" />
+                Speed Ramping
               </Label>
               <p className="text-[10px] text-muted-foreground">
-                Color center letter
+                Gradual speed up
               </p>
             </div>
             <Switch 
-              checked={settings?.orpHighlight} 
-              onCheckedChange={toggleOrpHighlight}
+              checked={settings?.speedRamping} 
+              onCheckedChange={toggleSpeedRamping}
               className="data-[state=checked]:bg-primary"
             />
+          </div>
+
+          <div className="pt-4">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs rounded-none"
+              disabled={!selectedId}
+              onClick={handleDownload}
+            >
+              <Download className="w-3 h-3 mr-2" />
+              Download Source
+            </Button>
           </div>
         </div>
       </div>

@@ -22,10 +22,36 @@ export function RSVPDisplay({
   const isMobile = useIsMobile();
   const words = useMemo(() => content.split(/\s+/).filter(w => w.length > 0), [content]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   // Speed calculation (ms per word)
-  const wpm = settings?.wpm || 300;
-  const baseDelay = 60000 / wpm;
+  const targetWpm = settings?.wpm || 300;
+  
+  // Speed Ramping Logic
+  const getCurrentWpm = () => {
+    if (!settings?.speedRamping || !isPlaying || !startTimeRef.current) return targetWpm;
+    
+    const elapsedSeconds = (Date.now() - startTimeRef.current) / 1000;
+    const rampDuration = 10; // 10 seconds to reach full speed
+    const startWpm = Math.max(100, targetWpm * 0.5); // Start at 50% speed
+    
+    if (elapsedSeconds >= rampDuration) return targetWpm;
+    
+    // Linear interpolation
+    const progress = elapsedSeconds / rampDuration;
+    return startWpm + (targetWpm - startWpm) * progress;
+  };
+
+  const currentWpm = getCurrentWpm();
+  const baseDelay = 60000 / currentWpm;
+
+  useEffect(() => {
+    if (isPlaying) {
+      if (!startTimeRef.current) startTimeRef.current = Date.now();
+    } else {
+      startTimeRef.current = null;
+    }
+  }, [isPlaying]);
 
   // ORP Calculation (Optimal Recognition Point)
   const getORP = (word: string) => {
@@ -66,7 +92,7 @@ export function RSVPDisplay({
     return () => {
       if (intervalRef.current) clearTimeout(intervalRef.current);
     };
-  }, [isPlaying, currentIndex, words, wpm, settings, onIndexChange, onComplete, baseDelay]);
+  }, [isPlaying, currentIndex, words, currentWpm, settings, onIndexChange, onComplete, baseDelay]);
 
   const currentWord = words[currentIndex] || "";
   const orpIndex = getORP(currentWord);
@@ -86,18 +112,18 @@ export function RSVPDisplay({
       <div 
         className="relative flex items-baseline font-reader leading-none select-none max-w-full px-4"
         style={{ 
-          fontSize: `${isMobile ? Math.min(settings?.fontSize || 48, 48) : (settings?.fontSize || 48)}px`,
+          fontSize: `${isMobile ? Math.min(settings?.fontSize || 48, 36) : (settings?.fontSize || 48)}px`,
           fontFamily: settings?.fontFamily || 'IBM Plex Sans'
         }}
       >
-        <span className="text-right text-muted-foreground flex-1 min-w-0 truncate">{leftPart}</span>
+        <span className="text-right text-muted-foreground flex-1 min-w-0">{leftPart}</span>
         <span className={`
           text-center w-[1ch] flex-shrink-0
           ${settings?.orpHighlight ? 'text-primary' : 'text-foreground'}
         `}>
           {centerChar}
         </span>
-        <span className="text-left text-muted-foreground flex-1 min-w-0 truncate">{rightPart}</span>
+        <span className="text-left text-muted-foreground flex-1 min-w-0">{rightPart}</span>
       </div>
 
       {/* Progress Bar (Subtle) */}
