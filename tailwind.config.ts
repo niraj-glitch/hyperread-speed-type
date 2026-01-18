@@ -86,6 +86,7 @@ export default {
         sans: ["var(--font-sans)"],
         serif: ["var(--font-serif)"],
         mono: ["var(--font-mono)"],
+        reader: ["IBM Plex Sans", "monospace"],
       },
       keyframes: {
         "accordion-down": {
