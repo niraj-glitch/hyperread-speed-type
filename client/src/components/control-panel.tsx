@@ -19,13 +19,15 @@ interface ControlPanelProps {
   onTogglePlay: () => void;
   onReset: () => void;
   onSkip: (amount: number) => void;
+  isMobile?: boolean;
 }
 
 export function ControlPanel({ 
   isPlaying, 
   onTogglePlay, 
   onReset,
-  onSkip 
+  onSkip,
+  isMobile = false
 }: ControlPanelProps) {
   const { data: settings } = useSettings();
   const { mutate: updateSettings } = useUpdateSettings();
@@ -47,52 +49,62 @@ export function ControlPanel({
   };
 
   return (
-    <div className="flex flex-col h-full bg-card border-l border-border">
-      <div className="p-6 border-b border-border">
-        <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
-          Controls
-        </h2>
-        
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-none h-10 w-10 border-border hover:bg-secondary"
-            onClick={() => onSkip(-10)}
-            title="Back 10 words"
-          >
-            <SkipBack className="w-4 h-4" />
-          </Button>
+    <div className={`flex flex-col h-full bg-card ${!isMobile ? 'border-l border-border' : ''}`}>
+      {!isMobile && (
+        <div className="p-6 border-b border-border">
+          <h2 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-4">
+            Controls
+          </h2>
+          
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-none h-10 w-10 border-border hover:bg-secondary"
+              onClick={() => onSkip(-10)}
+              title="Back 10 words"
+            >
+              <SkipBack className="w-4 h-4" />
+            </Button>
+
+            <Button 
+              variant={isPlaying ? "destructive" : "default"} 
+              className="rounded-none h-12 w-20 shadow-none"
+              onClick={onTogglePlay}
+            >
+              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-1" />}
+            </Button>
+
+            <Button 
+              variant="outline" 
+              size="icon" 
+              className="rounded-none h-10 w-10 border-border hover:bg-secondary"
+              onClick={() => onSkip(10)}
+              title="Forward 10 words"
+            >
+              <SkipForward className="w-4 h-4" />
+            </Button>
+          </div>
 
           <Button 
-            variant={isPlaying ? "destructive" : "default"} 
-            className="rounded-none h-12 w-20 shadow-none"
-            onClick={onTogglePlay}
+            variant="ghost" 
+            size="sm" 
+            className="w-full text-xs text-muted-foreground hover:text-foreground"
+            onClick={onReset}
           >
-            {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5 ml-1" />}
-          </Button>
-
-          <Button 
-            variant="outline" 
-            size="icon" 
-            className="rounded-none h-10 w-10 border-border hover:bg-secondary"
-            onClick={() => onSkip(10)}
-            title="Forward 10 words"
-          >
-            <SkipForward className="w-4 h-4" />
+            <RotateCcw className="w-3 h-3 mr-2" />
+            Reset to Start
           </Button>
         </div>
+      )}
 
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="w-full text-xs text-muted-foreground hover:text-foreground"
-          onClick={onReset}
-        >
-          <RotateCcw className="w-3 h-3 mr-2" />
-          Reset to Start
-        </Button>
-      </div>
+      {isMobile && (
+        <div className="p-4 border-b border-border">
+          <h2 className="text-sm font-bold uppercase tracking-widest text-primary">
+            Settings
+          </h2>
+        </div>
+      )}
 
       <div className="p-6 space-y-8 overflow-y-auto flex-1 custom-scrollbar">
         {/* WPM Control */}

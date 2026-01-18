@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useSettings } from "@/hooks/use-settings";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface RSVPDisplayProps {
   content: string;
@@ -18,6 +19,7 @@ export function RSVPDisplay({
   onComplete 
 }: RSVPDisplayProps) {
   const { data: settings } = useSettings();
+  const isMobile = useIsMobile();
   const words = useMemo(() => content.split(/\s+/).filter(w => w.length > 0), [content]);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -82,20 +84,20 @@ export function RSVPDisplay({
       </div>
 
       <div 
-        className="relative flex items-baseline font-reader leading-none select-none"
+        className="relative flex items-baseline font-reader leading-none select-none max-w-full px-4"
         style={{ 
-          fontSize: `${settings?.fontSize || 48}px`,
+          fontSize: `${isMobile ? Math.min(settings?.fontSize || 48, 48) : (settings?.fontSize || 48)}px`,
           fontFamily: settings?.fontFamily || 'IBM Plex Sans'
         }}
       >
-        <span className="text-right text-muted-foreground w-[400px]">{leftPart}</span>
+        <span className="text-right text-muted-foreground flex-1 min-w-0 truncate">{leftPart}</span>
         <span className={`
-          text-center w-[1ch]
+          text-center w-[1ch] flex-shrink-0
           ${settings?.orpHighlight ? 'text-primary' : 'text-foreground'}
         `}>
           {centerChar}
         </span>
-        <span className="text-left text-muted-foreground w-[400px]">{rightPart}</span>
+        <span className="text-left text-muted-foreground flex-1 min-w-0 truncate">{rightPart}</span>
       </div>
 
       {/* Progress Bar (Subtle) */}
